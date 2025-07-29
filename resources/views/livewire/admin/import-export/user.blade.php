@@ -3,39 +3,39 @@
         @if ($mode != 'import')
             <div>
                 <h3 class="mb-4 text-lg font-semibold leading-tight text-gray-800 dark:text-gray-200">
-                    Ekspor Data Karyawan/Admin
+                    Ekspor Data Peserta/Admin
                 </h3>
                 <form wire:submit.prevent="export">
                     <div>
                         <x-label for="user" class="flex items-center">
                             <x-checkbox value="user" id="user" wire:model.live="groups" />
-                            <span class="ms-2 text-sm text-gray-600 dark:text-gray-400">{{ __('Participant') }}</span>
+                            <span class="text-sm text-gray-600 ms-2 dark:text-gray-400">{{ __('Participant') }}</span>
                         </x-label>
                     </div>
                     <div class="mt-4">
                         <x-label for="admin" class="flex items-center">
                             <x-checkbox value="admin" id="admin" wire:model.live="groups" />
-                            <span class="ms-2 text-sm text-gray-600 dark:text-gray-400">{{ __('Admin') }}</span>
+                            <span class="text-sm text-gray-600 ms-2 dark:text-gray-400">{{ __('Admin') }}</span>
                         </x-label>
                     </div>
                     <div class="mt-4">
                         <x-label for="superadmin" class="flex items-center">
                             <x-checkbox value="superadmin" id="superadmin" wire:model.live="groups" />
-                            <span class="ms-2 text-sm text-gray-600 dark:text-gray-400">{{ __('Super Admin') }}</span>
+                            <span class="text-sm text-gray-600 ms-2 dark:text-gray-400">{{ __('Super Admin') }}</span>
                         </x-label>
                     </div>
                     @error('groups')
                         <x-input-error for="groups" class="mt-4" message="{{ $message }}" />
                     @enderror
-                    <div class="mt-4 flex flex-col items-center justify-stretch gap-4">
-                        <x-secondary-button type="button" wire:click="preview" class="w-full justify-center">
+                    <div class="flex flex-col items-center gap-4 mt-4 justify-stretch">
+                        <x-secondary-button type="button" wire:click="preview" class="justify-center w-full">
                             @if ($mode == 'export')
                                 {{ __('Cancel') }}
                             @else
                                 {{ __('Preview') }}
                             @endif
                         </x-secondary-button>
-                        <x-button wire:click="export" class="w-full justify-center">
+                        <x-button wire:click="export" class="justify-center w-full">
                             {{ $mode == 'export' ? __('Confirm & Export') : __('Export') }}
                         </x-button>
                     </div>
@@ -45,11 +45,11 @@
         @if ($mode != 'export')
             <div>
                 <h3 class="mb-4 text-lg font-semibold leading-tight text-gray-800 dark:text-gray-200">
-                    Impor Data Peserta/Admin
+                    Impor Data Peserta
                 </h3>
                 <form x-data="{ file: null }" method="post" wire:submit.prevent="import" enctype="multipart/form-data">
                     @csrf
-                    <div class="mb-4 flex items-center gap-3">
+                    <div class="flex items-center gap-3 mb-4">
                         <x-secondary-button class="me-2" type="button" x-on:click.prevent="$refs.file.click()"
                             x-text="file ? 'Ganti File' : 'Pilih File dan Pratinjau'">
                             Pilih File
@@ -75,20 +75,17 @@
         <h3 class="mt-4 text-lg font-semibold leading-tight text-gray-800 dark:text-gray-200">
             {{ __('Preview') . ' ' . $mode }}
         </h3>
-        <div class="mt-4 w-full overflow-x-scroll text-sm">
+        <div class="w-full mt-4 overflow-x-scroll text-sm">
             @php
                 $trClass = 'divide-x divide-gray-200 dark:divide-gray-700';
                 $thClass = 'px-4 py-3 text-left font-semibold dark:text-white';
                 $tdClass = 'px-4 py-4 text-sm font-medium text-gray-900 dark:text-white';
             @endphp
-            <table class="w-full divide-y divide-gray-200 border dark:divide-gray-700 dark:border-gray-700">
+            <table class="w-full border divide-y divide-gray-200 dark:divide-gray-700 dark:border-gray-700">
                 <thead class="bg-gray-50 dark:bg-gray-900">
                     <tr class="{{ $trClass }}">
-                        <th scope="col" class="px-2 py-3 text-left font-semibold dark:text-white">
+                        <th scope="col" class="px-2 py-3 font-semibold text-left dark:text-white">
                             No
-                        </th>
-                        <th scope="col" class="{{ $thClass }}">
-                            NIP
                         </th>
                         <th scope="col" class="{{ $thClass }}">
                             Name
@@ -115,24 +112,15 @@
                             City
                         </th>
                         <th scope="col" class="{{ $thClass }}">
-                            Education
-                        </th>
-                        <th scope="col" class="{{ $thClass }}">
-                            Division
-                        </th>
-                        <th scope="col" class="{{ $thClass }}">
-                            Job Title
+                            Kelompok
                         </th>
                     </tr>
                 </thead>
-                <tbody class="divide-y divide-gray-200 bg-white dark:divide-gray-700 dark:bg-gray-800">
+                <tbody class="bg-white divide-y divide-gray-200 dark:divide-gray-700 dark:bg-gray-800">
                     @foreach ($users as $user)
                         <tr class="{{ $trClass }}">
-                            <td class="px-2 py-4 text-center text-sm font-medium text-gray-900 dark:text-white">
+                            <td class="px-2 py-4 text-sm font-medium text-center text-gray-900 dark:text-white">
                                 {{ $loop->iteration }}
-                            </td>
-                            <td class="{{ $tdClass }}">
-                                {{ $user->nip }}
                             </td>
                             <td class="{{ $tdClass }}">
                                 {{ $user->name }}
@@ -157,13 +145,7 @@
                             </td>
                             <td class="{{ $tdClass }}">{{ $user->city }}</td>
                             <td class="{{ $tdClass }} text-nowrap">
-                                {{ $user->education?->name }}
-                            </td>
-                            <td class="{{ $tdClass }} text-nowrap">
                                 {{ $user->division?->name }}
-                            </td>
-                            <td class="{{ $tdClass }} text-nowrap">
-                                {{ $user->jobTitle?->name }}
                             </td>
                         </tr>
                     @endforeach

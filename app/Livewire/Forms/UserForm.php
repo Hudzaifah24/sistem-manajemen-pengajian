@@ -2,6 +2,7 @@
 
 namespace App\Livewire\Forms;
 
+use App\Models\Barcode;
 use Livewire\Form;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
@@ -88,6 +89,14 @@ class UserForm extends Form
             'raw_password' => $this->password ?? 'password',
         ]);
         if (isset($this->photo)) $user->updateProfilePhoto($this->photo);
+
+        Barcode::create([
+            'name' => $user->name,
+            'value' => rand(1111111111111, 9999999999999),
+            'radius' => 300,
+            'user_id' => $user->id
+        ]);
+
         $this->reset();
     }
 

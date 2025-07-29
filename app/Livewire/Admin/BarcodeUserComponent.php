@@ -13,7 +13,7 @@ use Laravel\Jetstream\InteractsWithBanner;
 use Ballen\Distical\Calculator as DistanceCalculator;
 use Livewire\Component;
 
-class BarcodeComponent extends Component
+class BarcodeUserComponent extends Component
 {
     use InteractsWithBanner;
 
@@ -43,8 +43,8 @@ class BarcodeComponent extends Component
 
     public function render()
     {
-        $barcodes = Barcode::whereNull('user_id')->get();
-        return view('livewire.admin.barcode', [
+        $barcodes = Barcode::whereNotNull('user_id')->get();
+        return view('livewire.admin.barcode-user', [
             'barcodes' => $barcodes,
         ]);
     }

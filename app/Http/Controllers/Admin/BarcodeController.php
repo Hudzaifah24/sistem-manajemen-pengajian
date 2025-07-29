@@ -26,6 +26,11 @@ class BarcodeController extends Controller
         return view('admin.barcodes.index');
     }
 
+    public function barcodesUser()
+    {
+        return view('admin.barcodes.barcodesUser');
+    }
+
     /**
      * Display the specified resource.
      */
