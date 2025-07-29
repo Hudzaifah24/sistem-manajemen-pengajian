@@ -17,6 +17,7 @@ class Barcode extends Model
         'latitude',
         'longitude',
         'radius',
+        'user_id'
     ];
 
     function getLatLngAttribute(): array|null

@@ -3,10 +3,9 @@
         <tr>
             <th>#</th>
             <th>Date</th>
-            <th>Name</th>
-            {{-- <th>NIP</th> --}}
-            <th>Time In</th>
-            <th>Time Out</th>
+            <th>Nama</th>
+            <th>Waktu Masuk</th>
+            <th>Waktu Keluar</th>
             <th>Acara</th>
             <th>Barcode Id</th>
             <th>Coordinates</th>
@@ -27,7 +26,6 @@
                 <td>{{ $loop->iteration }}</td>
                 <td>{{ $attendance->date?->format('Y-m-d') }}</td>
                 <td>{{ $attendance->user?->name }}</td>
-                {{-- <td data-type="s">{{ $attendance->user?->nip }}</td> --}}
                 <td>{{ $attendance->time_in?->format('H:i:s') }}</td>
                 <td>{{ $attendance->time_out?->format('H:i:s') }}</td>
                 <td>{{ $attendance->shift?->name }}</td>

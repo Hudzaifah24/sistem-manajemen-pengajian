@@ -9,7 +9,6 @@ use App\Http\Controllers\Admin\ImportExportController;
 use App\Http\Controllers\Admin\ScanController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\UserAttendanceController;
-use App\Livewire\Admin\UserQrScanner;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use Livewire\Livewire;
@@ -57,6 +56,7 @@ Route::middleware([
                 'edit' => 'admin.barcodes.edit',
                 'update' => 'admin.barcodes.update',
             ]);
+        Route::get('/barcodes-user', [BarcodeController::class, 'barcodesUser'])->name('admin.barcodes.user');
         Route::get('/barcodes/download/all', [BarcodeController::class, 'downloadAll'])
             ->name('admin.barcodes.downloadall');
         Route::get('/barcodes/{id}/download', [BarcodeController::class, 'download'])

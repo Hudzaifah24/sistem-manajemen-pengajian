@@ -1,5 +1,5 @@
 <div class="p-6 lg:p-8">
-  <script src="{{ url('/assets/js/qrcode.min.js') }}"></script>
+  <script src="https://cdn.jsdelivr.net/npm/qrcodejs/qrcode.min.js"></script>
   <x-button class="mb-4 mr-2" href="{{ route('admin.barcodes.create') }}">
     Buat Barcode Baru
   </x-button>
@@ -9,9 +9,9 @@
   <div class="grid grid-cols-1 gap-4 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
     @foreach ($barcodes as $barcode)
       <div
-        class="flex flex-col rounded-lg bg-white p-4 shadow hover:bg-gray-100 dark:bg-gray-800 dark:shadow-gray-600 hover:dark:bg-gray-700">
+        class="flex flex-col p-4 bg-white rounded-lg shadow hover:bg-gray-100 dark:bg-gray-800 dark:shadow-gray-600 hover:dark:bg-gray-700">
 
-        <div class="mt-4 flex items-center justify-center gap-2">
+        <div class="flex items-center justify-center gap-2 mt-4">
           <x-secondary-button href="{{ route('admin.barcodes.download', $barcode->id) }}">
             Download
           </x-secondary-button>
@@ -23,13 +23,21 @@
           </x-danger-button>
         </div>
         <div class="container flex items-center justify-center p-4">
-          <div id="qrcode{{ $barcode->id }}" class="h-64 w-64 bg-transparent">
+          <div id="qrcode{{ $barcode->id }}" class="w-64 h-64 bg-transparent">
           </div>
+          <script>
+            new QRCode(document.getElementById("qrcode{{ $barcode->id }}"), {
+                text: "{{ $barcode->value }}",
+                colorDark : "#000000",
+                colorLight : "#ffffff",
+                correctLevel : QRCode.CorrectLevel.H
+            });
+          </script>
         </div>
-        <h3 class="mb-3 text-center text-lg font-semibold leading-tight text-gray-800 dark:text-white">
+        <h3 class="mb-3 text-lg font-semibold leading-tight text-center text-gray-800 dark:text-white">
           {{ $barcode->name }}
         </h3>
-        <ul class="list-disc pl-4 dark:text-gray-400">
+        <ul class="pl-4 list-disc dark:text-gray-400">
           <li>
             <a href="https://www.google.com/maps/search/?api=1&query={{ $barcode->latitude }},{{ $barcode->longitude }}"
               target="_blank" class="hover:text-blue-500 hover:underline">
@@ -62,39 +70,3 @@
     </x-slot>
   </x-confirmation-modal>
 </div>
-
-@script
-  <script type="text/javascript">
-    let barcodes = {{ $barcodes->map(fn($barcode) => $barcode->id) }};
-
-    let isDark = $store.darkMode.on;
-
-    barcodes.forEach(element => {
-      new QRCode(document.getElementById("qrcode" + element), {
-        text: '{{ $barcode->value }}',
-        colorDark: $store.darkMode.on ? "#ffffff" : "#000000",
-        colorLight: $store.darkMode.on ? "#000000" : "#ffffff",
-        correctLevel: QRCode.CorrectLevel.M
-      });
-    });
-    setInterval(() => {
-      if (isDark == $store.darkMode.on &&
-        document.getElementById("qrcode" + barcodes[0]).hasAttribute("title")) {
-        return;
-      }
-      isDark = $store.darkMode.on;
-      barcodes.forEach(element => {
-        if (!document.getElementById("qrcode" + element)) {
-          return;
-        }
-        document.getElementById("qrcode" + element).innerHTML = "";
-        new QRCode(document.getElementById("qrcode" + element), {
-          text: '{{ $barcode->value }}',
-          colorDark: $store.darkMode.on ? "#ffffff" : "#000000",
-          colorLight: $store.darkMode.on ? "#000000" : "#ffffff",
-          correctLevel: QRCode.CorrectLevel.M,
-        });
-      });
-    }, 250);
-  </script>
-@endscript

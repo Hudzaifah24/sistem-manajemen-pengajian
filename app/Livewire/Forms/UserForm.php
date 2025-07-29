@@ -2,6 +2,7 @@
 
 namespace App\Livewire\Forms;
 
+use App\Models\Barcode;
 use Livewire\Form;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
@@ -13,7 +14,6 @@ class UserForm extends Form
     public ?User $user = null;
 
     public $name = '';
-    public $nip = '';
     public $email = '';
     public $phone = '';
     public $password = null;
@@ -24,8 +24,6 @@ class UserForm extends Form
     public $birth_date = null;
     public $birth_place = '';
     public $division_id = null;
-    public $education_id = null;
-    public $job_title_id = null;
     public $photo = null;
 
     public function rules()
@@ -38,7 +36,6 @@ class UserForm extends Form
                 'max:255',
                 Rule::unique('users')->ignore($this->user)
             ],
-            'nip' => [$requiredOrNullable, 'string', 'max:255'],
             'email' => [
                 'required',
                 'email',
@@ -54,8 +51,6 @@ class UserForm extends Form
             'birth_date' => ['nullable', 'date'],
             'birth_place' => ['nullable', 'string', 'max:255'],
             'division_id' => ['nullable', 'exists:divisions,id'],
-            'education_id' => ['nullable', 'exists:educations,id'],
-            'job_title_id' => ['nullable', 'exists:job_titles,id'],
             'photo' => ['nullable', 'mimes:jpg,jpeg,png', 'max:1024'],
         ];
     }
@@ -64,7 +59,6 @@ class UserForm extends Form
     {
         $this->user = $user;
         $this->name = $user->name;
-        $this->nip = $user->nip;
         $this->email = $user->email;
         $this->phone = $user->phone;
         if ($this->isAllowed()) {
@@ -79,8 +73,6 @@ class UserForm extends Form
             : null;
         $this->birth_place = $user->birth_place;
         $this->division_id = $user->division_id;
-        $this->education_id = $user->education_id;
-        $this->job_title_id = $user->job_title_id;
         return $this;
     }
 
@@ -97,6 +89,14 @@ class UserForm extends Form
             'raw_password' => $this->password ?? 'password',
         ]);
         if (isset($this->photo)) $user->updateProfilePhoto($this->photo);
+
+        Barcode::create([
+            'name' => $user->name,
+            'value' => rand(1111111111111, 9999999999999),
+            'radius' => 300,
+            'user_id' => $user->id
+        ]);
+
         $this->reset();
     }
 
