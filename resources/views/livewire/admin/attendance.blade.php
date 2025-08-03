@@ -9,7 +9,7 @@
     </h3>
 
     <div class="mb-1 text-sm dark:text-white">Filter:</div>
-    <div class="mb-4 grid grid-cols-2 flex-wrap items-center gap-5 md:gap-8 lg:flex">
+    <div class="grid flex-wrap items-center grid-cols-2 gap-5 mb-4 md:gap-8 lg:flex">
         <div class="flex flex-col gap-3 lg:flex-row lg:items-center">
             <x-label for="month_filter" value="Per Bulan"></x-label>
             <x-input type="month" name="month_filter" id="month_filter" wire:model.live="month" />
@@ -18,7 +18,7 @@
             <x-label for="week_filter" value="Per Minggu"></x-label>
             <x-input type="week" name="week_filter" id="week_filter" wire:model.live="week" />
         </div>
-        <div class="col-span-2 flex flex-col gap-3 lg:flex-row lg:items-center">
+        <div class="flex flex-col col-span-2 gap-3 lg:flex-row lg:items-center">
             <x-label for="day_filter" value="Per Hari"></x-label>
             <x-input type="date" name="day_filter" id="day_filter" wire:model.live="date" />
         </div>
@@ -39,22 +39,16 @@
             @endforeach
         </x-select>
 
-        <div class="col-span-2 flex items-center gap-2 lg:w-96">
-            <x-input type="text" class="w-full" name="search" id="seacrh" wire:model="search"
+        <div class="flex items-center col-span-2 gap-2 lg:w-96">
+            <x-input type="text" class="w-full" name="search" id="seacrh" wire:model.live="search"
                 placeholder="{{ __('Search') }}" />
-            <x-button type="button" wire:click="$refresh" wire:loading.attr="disabled">{{ __('Search') }}</x-button>
-            @if ($search)
-                <x-secondary-button type="button" wire:click="$set('search', '')" wire:loading.attr="disabled">
-                    {{ __('Reset') }}
-                </x-secondary-button>
-            @endif
         </div>
         <div class="lg:hidden"></div>
         <x-secondary-button
             href="{{ route('admin.attendances.report', ['month' => $month, 'week' => $week, 'date' => $date, 'division' => $division, 'jobTitle' => $jobTitle, 'shift' => $shift]) }}"
             class="flex justify-center gap-2">
             Cetak Laporan
-            <x-heroicon-o-printer class="h-5 w-5" />
+            <x-heroicon-o-printer class="w-5 h-5" />
         </x-secondary-button>
     </div>
 
@@ -62,16 +56,16 @@
         <table class="w-full divide-y divide-gray-200 dark:divide-gray-700">
             <thead class="bg-gray-50 dark:bg-gray-900">
                 <tr>
-                    <th scope="col" class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300">
+                    <th scope="col" class="px-4 py-3 text-xs font-medium text-left text-gray-500 dark:text-gray-300">
                         {{ $isPerDayFilter ? __('Nama') : __('Nama') . '/' . __('Tanggal') }}
                     </th>
                     @if ($isPerDayFilter)
                         <th scope="col"
-                            class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300">
+                            class="px-4 py-3 text-xs font-medium text-left text-gray-500 dark:text-gray-300">
                             {{ __('Kelompok') }}
                         </th>
                         <th scope="col"
-                            class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300">
+                            class="px-4 py-3 text-xs font-medium text-left text-gray-500 dark:text-gray-300">
                             {{ __('Acara') }}
                         </th>
                     @endif
@@ -96,24 +90,24 @@
                     @endforeach
                     @if ($isPerDayFilter)
                         <th scope="col"
-                            class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300">
+                            class="px-4 py-3 text-xs font-medium text-left text-gray-500 dark:text-gray-300">
                             {{ __('Konfirmasi Manual') }}
                         </th>
                     @endif
                     @if ($isPerDayFilter)
                         <th scope="col"
-                            class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300">
+                            class="px-4 py-3 text-xs font-medium text-left text-gray-500 dark:text-gray-300">
                             {{ __('Waktu Masuk') }}
                         </th>
                         <th scope="col"
-                            class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300">
+                            class="px-4 py-3 text-xs font-medium text-left text-gray-500 dark:text-gray-300">
                             {{ __('Waktu Keluar') }}
                         </th>
                     @endif
                     @if (!$isPerDayFilter)
                         @foreach (['H', 'T', 'I', 'S', 'A'] as $_st)
                             <th scope="col"
-                                class="text-nowrap border border-gray-300 px-1 py-3 text-center text-xs font-medium text-gray-500 dark:border-gray-600 dark:text-gray-300">
+                                class="px-1 py-3 text-xs font-medium text-center text-gray-500 border border-gray-300 text-nowrap dark:border-gray-600 dark:text-gray-300">
                                 {{ $_st }}
                             </th>
                         @endforeach
@@ -125,9 +119,9 @@
                     @endif
                 </tr>
             </thead>
-            <tbody class="divide-y divide-gray-200 bg-white dark:divide-gray-700 dark:bg-gray-800">
+            <tbody class="bg-white divide-y divide-gray-200 dark:divide-gray-700 dark:bg-gray-800">
                 @php
-                    $class = 'cursor-pointer px-4 py-3 text-sm font-medium text-gray-900 dark:text-white';
+                    $class = 'px-4 py-3 text-sm font-medium text-gray-900 cursor-pointer dark:text-white';
                 @endphp
                 @foreach ($employees as $employee)
                     @php
@@ -225,7 +219,7 @@
                         @if ($isPerDayFilter)
                             <td class="{{ $class }} group-hover:bg-gray-100 dark:group-hover:bg-gray-700">
                                 <select
-                                    class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 dark:border-gray-700 dark:bg-gray-900 dark:text-white dark:focus:ring-indigo-800"
+                                    class="w-full border-gray-300 rounded-md shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 dark:border-gray-700 dark:bg-gray-900 dark:text-white dark:focus:ring-indigo-800"
                                     wire:change="updateAttendanceStatus('{{ $employee->id }}', $event.target.value, '{{ $date }}')">
                                     <option value="" disabled @if ($currentStatusForSelect === '-') selected @endif>
                                         Pilih Status</option>
@@ -249,7 +243,7 @@
                         @if (!$isPerDayFilter)
                             @foreach ([$presentCount, $lateCount, $excusedCount, $sickCount, $absentCount] as $statusCount)
                                 <td
-                                    class="cursor-pointer border border-gray-300 px-1 py-3 text-center text-sm font-medium text-gray-900 group-hover:bg-gray-100 dark:border-gray-600 dark:text-white dark:group-hover:bg-gray-700">
+                                    class="px-1 py-3 text-sm font-medium text-center text-gray-900 border border-gray-300 cursor-pointer group-hover:bg-gray-100 dark:border-gray-600 dark:text-white dark:group-hover:bg-gray-700">
                                     {{ $statusCount }}
                                 </td>
                             @endforeach
@@ -257,7 +251,7 @@
 
                         @if ($isPerDayFilter)
                             <td
-                                class="cursor-pointer text-center text-sm font-medium text-gray-900 group-hover:bg-gray-100 dark:text-white dark:group-hover:bg-gray-700">
+                                class="text-sm font-medium text-center text-gray-900 cursor-pointer group-hover:bg-gray-100 dark:text-white dark:group-hover:bg-gray-700">
                                 <div class="flex items-center justify-center gap-3">
                                     @if (
                                         $currentDayAttendance &&
@@ -279,7 +273,7 @@
     </div>
 
     @if ($employees->isEmpty())
-        <div class="my-2 text-center text-sm font-medium text-gray-900 dark:text-gray-100">
+        <div class="my-2 text-sm font-medium text-center text-gray-900 dark:text-gray-100">
             Tidak ada data
         </div>
     @endif

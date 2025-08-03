@@ -124,6 +124,6 @@ class User extends Authenticatable
     }
 
     public function barcode() {
-        return $this->hasOne(Barcode::class, 'user_id', 'id');
+        return $this->hasOne(Barcode::class, 'user_id');
     }
 }

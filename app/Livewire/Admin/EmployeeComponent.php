@@ -3,6 +3,7 @@
 namespace App\Livewire\Admin;
 
 use App\Livewire\Forms\UserForm;
+use App\Models\Barcode;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Builder;
 use Laravel\Jetstream\InteractsWithBanner;
@@ -46,6 +47,7 @@ class EmployeeComponent extends Component
     {
         $this->form->store();
         $this->creating = false;
+        $this->dispatch('reload-page');
         $this->banner(__('Created successfully.'));
     }
 
@@ -63,6 +65,7 @@ class EmployeeComponent extends Component
     {
         $this->form->update();
         $this->editing = false;
+        $this->dispatch('reload-page');
         $this->banner(__('Updated successfully.'));
     }
 
@@ -81,6 +84,8 @@ class EmployeeComponent extends Component
     public function delete()
     {
         $user = User::find($this->selectedId);
+        $barcode = Barcode::where('user_id', $user->id)->first();
+        $barcode->delete();
         $this->form->setUser($user)->delete();
         $this->confirmingDeletion = false;
         $this->banner(__('Deleted successfully.'));
@@ -91,13 +96,10 @@ class EmployeeComponent extends Component
         $users = User::where('group', 'user')
             ->when($this->search, function (Builder $q) {
                 return $q->where('name', 'like', '%' . $this->search . '%')
-                    ->orWhere('nip', 'like', '%' . $this->search . '%')
                     ->orWhere('email', 'like', '%' . $this->search . '%')
                     ->orWhere('phone', 'like', '%' . $this->search . '%');
             })
             ->when($this->division, fn (Builder $q) => $q->where('division_id', $this->division))
-            ->when($this->jobTitle, fn (Builder $q) => $q->where('job_title_id', $this->jobTitle))
-            ->when($this->education, fn (Builder $q) => $q->where('education_id', $this->education))
             ->orderBy('name')
             ->paginate(20);
         return view('livewire.admin.employees', ['users' => $users]);

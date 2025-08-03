@@ -19,6 +19,7 @@ return new class extends Migration
             $table->double('longitude')->default(0); // lokasi barcode sumbu X
             $table->float('radius'); // jarak maksimal absen dari lokasi barcode (dalam meter)
             $table->string('user_id')->nullable();
+            $table->foreignId('shift_id')->nullable();
             $table->timestamps();
         });
     }

@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\BarcodeGenerator;
 use App\Http\Controllers\Controller;
 use App\Models\Barcode;
+use App\Models\Shift;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 
@@ -16,6 +17,7 @@ class BarcodeController extends Controller
         'lat' => ['required', 'numeric'],
         'lng' => ['required', 'numeric'],
         'radius' => ['required', 'numeric'],
+        'shift_id' => ['required'],
     ];
 
     /**
@@ -48,13 +50,15 @@ class BarcodeController extends Controller
     {
         $request->validate($this->rules);
         try {
-            Barcode::create([
+            $barcode = Barcode::create([
                 'name' => $request->name,
                 'value' => $request->value,
                 'latitude' => doubleval($request->lat),
                 'longitude' => doubleval($request->lng),
                 'radius' => $request->radius,
+                'shift_id' => $request->shift_id,
             ]);
+
             return redirect()->route('admin.barcodes')->with('flash.banner', __('Created successfully.'));
         } catch (\Throwable $th) {
             return redirect()->back()
@@ -80,7 +84,9 @@ class BarcodeController extends Controller
                 'latitude' => doubleval($request->lat),
                 'longitude' => doubleval($request->lng),
                 'radius' => $request->radius,
+                'shift_id' => $request->shift_id,
             ]);
+
             return redirect()->route('admin.barcodes')->with('flash.banner', __('Updated successfully.'));
         } catch (\Throwable $th) {
             return redirect()->back()

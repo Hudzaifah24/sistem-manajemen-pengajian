@@ -17,7 +17,8 @@ class Barcode extends Model
         'latitude',
         'longitude',
         'radius',
-        'user_id'
+        'user_id',
+        'shift_id',
     ];
 
     function getLatLngAttribute(): array|null
@@ -29,5 +30,13 @@ class Barcode extends Model
             'lat' => $this->latitude,
             'lng' => $this->longitude
         ];
+    }
+
+    public function shift() {
+        return $this->hasOne(Shift::class);
+    }
+
+    public function user() {
+        return $this->belongsTo(User::class);
     }
 }

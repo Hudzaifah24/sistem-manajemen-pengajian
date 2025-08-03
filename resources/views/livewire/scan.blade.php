@@ -22,8 +22,8 @@
         const mapIsVisible = currentMap.style.display === "none";
         currentMap.style.display = mapIsVisible ? "block" : "none";
         document.querySelector('#toggleCurrentMap').innerHTML = mapIsVisible ?
-          `<x-heroicon-s-chevron-up class="mr-2 h-5 w-5" />` :
-          `<x-heroicon-s-chevron-down class="mr-2 h-5 w-5" />`;
+          `<x-heroicon-s-chevron-up class="w-5 h-5 mr-2" />` :
+          `<x-heroicon-s-chevron-down class="w-5 h-5 mr-2" />`;
       }
 
       function toggleMap() {
@@ -41,7 +41,7 @@
     @if (!$isAbsence)
       <div class="flex flex-col gap-4">
         <div>
-          <x-select id="shift" class="mt-1 block w-full" wire:model="shift_id" disabled="{{ !is_null($attendance) }}">
+          <x-select id="shift" class="block w-full mt-1" wire:model="shift_id" disabled="{{ !is_null($attendance) }}">
             <option value="">{{ __('Select Shift') }}</option>
             @foreach ($shifts as $shift)
               <option value="{{ $shift->id }}" {{ $shift->id == $shift_id ? 'selected' : '' }}>
@@ -54,7 +54,7 @@
           @enderror
         </div>
         <div class="flex justify-center outline outline-gray-100 dark:outline-slate-700" wire:ignore>
-          <div id="scanner" class="min-h-72 sm:min-h-96 w-72 rounded-sm outline-dashed outline-slate-500 sm:w-96">
+          <div id="scanner" class="rounded-sm min-h-72 sm:min-h-96 w-72 outline-dashed outline-slate-500 sm:w-96">
           </div>
         </div>
       </div>
@@ -62,7 +62,7 @@
     <div class="w-full">
       <h4 id="scanner-error" class="mb-3 text-lg font-semibold text-red-500 dark:text-red-400 sm:text-xl" wire:ignore>
       </h4>
-      <h4 id="scanner-result" class="mb-3 hidden text-lg font-semibold text-green-500 dark:text-green-400 sm:text-xl">
+      <h4 id="scanner-result" class="hidden mb-3 text-lg font-semibold text-green-500 dark:text-green-400 sm:text-xl">
         {{ $successMsg }}
       </h4>
       <h4 id="latlng" class="mb-3 text-lg font-semibold text-gray-600 dark:text-gray-100 sm:text-xl">
@@ -74,14 +74,14 @@
               class="underline hover:text-blue-400">
               {{ __('Your location') . ': ' . $currentLiveCoords[0] . ', ' . $currentLiveCoords[1] }}
             </a>
-            <button class="text-nowrap h-6" onclick="toggleCurrentMap()" id="toggleCurrentMap">
-              <x-heroicon-s-chevron-down class="mr-2 h-5 w-5" />
+            <button class="h-6 text-nowrap" onclick="toggleCurrentMap()" id="toggleCurrentMap">
+              <x-heroicon-s-chevron-down class="w-5 h-5 mr-2" />
             </button>
           </div>
         @else
           {{ __('Your location') . ': -, -' }}
         @endif
-        <div class="my-6 h-72 w-full md:h-96" id="currentMap" wire:ignore></div>
+        <div class="w-full my-6 h-72 md:h-96" id="currentMap" wire:ignore></div>
       </h4>
       <div class="grid grid-cols-2 gap-3 md:grid-cols-1 lg:grid-cols-2 xl:grid-cols-3">
         <div
@@ -97,15 +97,15 @@
                 @endif
               </span>
               @if ($attendance?->status == 'late')
-                <span class="mx-1 hidden sm:inline-block">|</span>
+                <span class="hidden mx-1 sm:inline-block">|</span>
               @endif
               <span>{{ $attendance?->status == 'late' ? 'Terlambat: Ya' : '' }}</span>
             </div>
           </div>
-          <x-heroicon-o-arrows-pointing-in class="h-5 w-5" />
+          <x-heroicon-o-arrows-pointing-in class="w-5 h-5" />
         </div>
         <div
-          class="flex items-center justify-between rounded-md bg-orange-200 px-4 py-2 text-gray-800 dark:bg-orange-900 dark:text-white dark:shadow-gray-700">
+          class="flex items-center justify-between px-4 py-2 text-gray-800 bg-orange-200 rounded-md dark:bg-orange-900 dark:text-white dark:shadow-gray-700">
           <div>
             <h4 class="text-lg font-semibold md:text-xl">Absen Keluar</h4>
             @if ($isAbsence)
@@ -114,10 +114,10 @@
               {{ $attendance?->time_out ? Carbon::parse($attendance?->time_out)->format('H:i:s') : 'Belum Absen' }}
             @endif
           </div>
-          <x-heroicon-o-arrows-pointing-out class="h-5 w-5" />
+          <x-heroicon-o-arrows-pointing-out class="w-5 h-5" />
         </div>
         <button
-          class="col-span-2 flex items-center justify-between rounded-md bg-purple-200 px-4 py-2 text-gray-800 dark:bg-purple-900 dark:text-white dark:shadow-gray-700 md:col-span-1 lg:col-span-2 xl:col-span-1"
+          class="flex items-center justify-between col-span-2 px-4 py-2 text-gray-800 bg-purple-200 rounded-md dark:bg-purple-900 dark:text-white dark:shadow-gray-700 md:col-span-1 lg:col-span-2 xl:col-span-1"
           {{ is_null($attendance?->lat_lng) ? 'disabled' : 'onclick=toggleMap()' }} id="toggleMap">
           <div>
             <h4 class="text-lg font-semibold md:text-xl">Koordinat Absen</h4>
@@ -130,27 +130,27 @@
               </a>
             @endif
           </div>
-          <x-heroicon-o-map-pin class="h-6 w-6" />
+          <x-heroicon-o-map-pin class="w-6 h-6" />
         </button>
       </div>
 
-      <div class="my-6 h-52 w-full md:h-64" id="map" wire:ignore></div>
+      <div class="w-full my-6 h-52 md:h-64" id="map" wire:ignore></div>
 
       <hr class="my-4">
 
       <div class="grid grid-cols-2 gap-3 md:grid-cols-2 lg:grid-cols-3" wire:ignore>
         <a href="{{ route('apply-leave') }}">
           <div
-            class="flex flex-col-reverse items-center justify-center gap-2 rounded-md bg-amber-500 px-4 py-2 text-center font-medium text-white shadow-md shadow-gray-400 transition duration-100 hover:bg-amber-600 dark:shadow-gray-700 md:flex-row md:gap-3">
+            class="flex flex-col-reverse items-center justify-center gap-2 px-4 py-2 font-medium text-center text-white transition duration-100 rounded-md shadow-md bg-amber-500 shadow-gray-400 hover:bg-amber-600 dark:shadow-gray-700 md:flex-row md:gap-3">
             Ajukan Izin
-            <x-heroicon-o-envelope-open class="h-6 w-6 text-white" />
+            <x-heroicon-o-envelope-open class="w-6 h-6 text-white" />
           </div>
         </a>
         <a href="{{ route('attendance-history') }}">
           <div
-            class="flex flex-col-reverse items-center justify-center gap-2 rounded-md bg-blue-500 px-4 py-2 text-center font-medium text-white shadow-md shadow-gray-400 hover:bg-blue-600 dark:shadow-gray-700 md:flex-row md:gap-3">
+            class="flex flex-col-reverse items-center justify-center gap-2 px-4 py-2 font-medium text-center text-white bg-blue-500 rounded-md shadow-md shadow-gray-400 hover:bg-blue-600 dark:shadow-gray-700 md:flex-row md:gap-3">
             Riwayat Absen
-            <x-heroicon-o-clock class="h-6 w-6 text-white" />
+            <x-heroicon-o-clock class="w-6 h-6 text-white" />
           </div>
         </a>
       </div>

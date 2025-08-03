@@ -2,6 +2,7 @@
 
 namespace App\Livewire\Forms;
 
+use App\Models\Barcode;
 use App\Models\Shift;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\Rule;
@@ -10,8 +11,10 @@ use Livewire\Form;
 class ShiftForm extends Form
 {
     public ?Shift $shift;
+    public ?Barcode $barcode;
 
     public $name = '';
+    public $date = '';
     public $start_time = null;
     public $end_time = null;
 
@@ -22,8 +25,9 @@ class ShiftForm extends Form
                 'required',
                 'string',
                 'max:255',
-                Rule::unique('shifts')->ignore($this->shift)
+                // Rule::unique('shifts')->ignore($this->shift)
             ],
+            'date' => ['required'],
             'start_time' => ['required'],
             'end_time' => ['nullable'],
         ];
@@ -33,8 +37,15 @@ class ShiftForm extends Form
     {
         $this->shift = $shift;
         $this->name = $shift->name;
+        $this->date = $shift->date;
         $this->start_time = $shift->start_time;
         $this->end_time = $shift->end_time;
+        return $this;
+    }
+
+    public function setBarcode(Barcode $barcode)
+    {
+        $this->barcode = $barcode;
         return $this;
     }
 
@@ -44,7 +55,15 @@ class ShiftForm extends Form
             return abort(403);
         }
         $this->validate();
-        Shift::create($this->all());
+        $shift = Shift::create($this->all());
+
+        Barcode::create([
+            'name' => $shift->name,
+            'value' => rand(1111111111111, 9999999999999),
+            'radius' => 300,
+            'shift_id' => $shift->id
+        ]);
+
         $this->reset();
     }
 

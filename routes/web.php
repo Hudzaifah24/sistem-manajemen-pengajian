@@ -4,6 +4,7 @@ use App\Helpers;
 use App\Http\Controllers\Admin\BarcodeController;
 use App\Http\Controllers\Admin\MasterDataController;
 use App\Http\Controllers\Admin\AttendanceController;
+use App\Http\Controllers\BarcodeUserController;
 use App\Http\Controllers\Admin\EmployeeController;
 use App\Http\Controllers\Admin\ImportExportController;
 use App\Http\Controllers\Admin\ScanController;
@@ -36,6 +37,9 @@ Route::middleware([
 
         Route::get('/attendance-history', [UserAttendanceController::class, 'history'])
             ->name('attendance-history');
+
+        Route::get('/userBarcodes/{id}/download', [BarcodeUserController::class, 'download'])
+            ->name('user.barcodes.download');
     });
 
     // ADMIN AREA

@@ -6,12 +6,55 @@
   </x-slot>
 
   <div>
-    <div class="mx-auto max-w-7xl py-10 sm:px-6 lg:px-8">
+    <div class="py-10 mx-auto max-w-7xl sm:px-6 lg:px-8">
       @if (Laravel\Fortify\Features::canUpdateProfileInformation())
         @livewire('profile.update-profile-information-form')
 
         <x-section-border />
       @endif
+
+        @if ($user->barcode)
+            <x-form-section submit="xxx">
+                <x-slot name="title">
+                    {{ __('Barcode User') }}
+                </x-slot>
+
+                <x-slot name="description">
+                    {{ __('user barcode and download.') }}
+                </x-slot>
+
+                <x-slot name="form">
+                    <div class="col-span-6 sm:col-span-4">
+                        <div id="qrcode{{ $user->barcode->id }}" class="bg-transparent w-80 h-80"></div>
+                    </div>
+                </x-slot>
+
+                <x-slot name="actions">
+                    <x-button type="button" wire:loading.attr="disabled" href="{{ route('user.barcodes.download', $user->barcode->id) }}">
+                        {{ __('Download Barcode') }}
+                    </x-button>
+                </x-slot>
+            </x-form-section>
+
+            @push('scripts')
+                <script>
+                    let element = document.getElementById("qrcode{{ $user->barcode->id }}");
+
+                    element.innerHTML = '';
+
+                    new QRCode(element, {
+                        text: "{{ $user->barcode->value }}",
+                        width: 320,
+                        height: 320,
+                        colorDark : "#000000",
+                        colorLight : "#ffffff",
+                        correctLevel : QRCode.CorrectLevel.H
+                    });
+                </script>
+            @endpush
+
+            <x-section-border />
+        @endif
 
       @if (Laravel\Fortify\Features::enabled(Laravel\Fortify\Features::updatePasswords()))
         <div class="mt-10 sm:mt-0">

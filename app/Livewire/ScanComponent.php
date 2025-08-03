@@ -131,7 +131,7 @@ class ScanComponent extends Component
 
             $this->shift_id = $this->shifts
                 ->where(fn (Shift $shift) => $shift->start_time == $closest->format('H:i:s'))
-                ->first()->id;
+                ->first()->id ?? null;
         }
     }
 

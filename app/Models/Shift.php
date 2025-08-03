@@ -12,7 +12,12 @@ class Shift extends Model
 
     protected $fillable = [
         'name',
+        'date',
         'start_time',
         'end_time',
     ];
+
+    public function barcode() {
+        return $this->hasOne(Barcode::class);
+    }
 }

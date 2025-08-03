@@ -1,4 +1,6 @@
 <div>
+    <script src="https://cdn.jsdelivr.net/npm/qrcodejs/qrcode.min.js"></script>
+
     <div class="flex-col items-center gap-5 mb-4 sm:flex-row md:flex md:justify-between lg:mr-4">
         <h3 class="mb-4 text-lg font-semibold leading-tight text-gray-800 dark:text-gray-200 md:mb-0">
             Data Peserta
@@ -17,38 +19,9 @@
                 </option>
             @endforeach
         </x-select>
-        {{-- <x-select id="jobTitle" wire:model.live="jobTitle">
-            <option value="">{{ __('Select Job Title') }}</option>
-            @foreach (App\Models\JobTitle::all() as $_jobTitle)
-                <option value="{{ $_jobTitle->id }}" {{ $_jobTitle->id == $jobTitle ? 'selected' : '' }}>
-                    {{ $_jobTitle->name }}
-                </option>
-            @endforeach
-        </x-select>
-        <x-select id="education" wire:model.live="education">
-            <option value="">{{ __('Last Education') }}</option>
-            @foreach (App\Models\Education::all() as $_education)
-                <option value="{{ $_education->id }}" {{ $_education->id == $education ? 'selected' : '' }}>
-                    {{ $_education->name }}
-                </option>
-            @endforeach
-        </x-select> --}}
         <div class="flex items-center col-span-3 gap-2 lg:col-span-1">
-            <x-input type="text" class="w-full lg:w-72" name="search" id="seacrh" wire:model="search"
+            <x-input type="text" wire:model.live="search" class="w-full lg:w-72" name="search" id="seacrh"
                 placeholder="{{ __('Search') }}" />
-            <div class="flex gap-2">
-                <x-button class="flex justify-center sm:w-32" type="button" wire:click="$refresh"
-                    wire:loading.attr="disabled">
-                    {{ __('Search') }}
-                </x-button>
-                @if ($search)
-                    <x-secondary-button class="flex justify-center sm:w-32" type="button"
-                        wire:click="$set('search', '')" wire:loading.attr="disabled">
-                        {{ __('Reset') }}
-                    </x-secondary-button>
-                @endif
-            </div>
-
         </div>
     </div>
     <div class="overflow-x-scroll">
@@ -62,9 +35,6 @@
                     <th scope="col" class="px-6 py-3 text-xs font-medium text-left text-gray-500 dark:text-gray-300">
                         {{ __('Name') }}
                     </th>
-                    {{-- <th scope="col" class="px-6 py-3 text-xs font-medium text-left text-gray-500 dark:text-gray-300">
-                        {{ __('NIP') }}
-                    </th> --}}
                     <th scope="col" class="px-6 py-3 text-xs font-medium text-left text-gray-500 dark:text-gray-300">
                         {{ __('Email') }}
                     </th>
@@ -102,10 +72,6 @@
                             {{ $wireClick }}>
                             {{ $user->name }}
                         </td>
-                        {{-- <td class="{{ $class }} px-6 py-4 text-sm font-medium text-gray-900 dark:text-white"
-                            {{ $wireClick }}>
-                            {{ $user->nip }}
-                        </td> --}}
                         <td class="{{ $class }} px-6 py-4 text-sm font-medium text-gray-900 dark:text-white"
                             {{ $wireClick }}>
                             {{ $user->email }}
@@ -124,6 +90,9 @@
                         </td>
                         <td class="relative px-6 py-4">
                             <div class="flex justify-end gap-2">
+                                <x-button type="button" onclick="showQrFn{{ $user->id }}(true, '{{ $user->id }}')">
+                                    Qr Code
+                                </x-button>
                                 <x-button wire:click="edit('{{ $user->id }}')">
                                     Edit
                                 </x-button>
@@ -134,6 +103,56 @@
                             </div>
                         </td>
                     </tr>
+
+                    <div style="display: none;" class="fixed inset-0 z-50 flex justify-center w-full h-screen mt-4 overflow-y-auto modalShowQr{{ $user->id }} jetstream-modal">
+                        <div class="px-10">
+                            <div style="display: none;" class="fixed inset-0 transition-all transform modalShowQr{{ $user->id }}" onclick="showQrFn{{ $user->id }}(false, '{{ $user->id }}')">
+                                <div class="absolute inset-0 bg-gray-500 opacity-75 dark:bg-gray-900"></div>
+                            </div>
+
+                            <div style="display: none;" class="mb-6 overflow-hidden transition-all transform bg-white pt-10 pb-10 rounded-lg shadow-xl modalShowQr{{ $user->id }} dark:bg-gray-800 sm:mx-auto sm:w-full">
+                                <div class="px-6 py-4 mb-5">
+                                    <div class="flex justify-center w-full mt-6">
+                                        <div id="qrcode{{ $user->barcode->id }}" class="bg-transparent w-80 h-80"></div>
+                                    </div>
+                                    <script>
+                                        function showQrFn{{ $user->id }}(show, id) {
+                                            const modals = document.getElementsByClassName('modalShowQr'+id);
+
+                                            for (let i = 0; i < modals.length; i++) {
+                                                if (show) {
+                                                    modals[i].style.display = 'block';
+                                                } else {
+                                                    modals[i].style.display = 'none';
+                                                }
+                                            }
+
+                                            let element = document.getElementById("qrcode{{ $user->barcode->id }}");
+
+                                            element.innerHTML = '';
+
+                                            new QRCode(element, {
+                                                text: "{{ $user->barcode->value }}",
+                                                width: 320,
+                                                height: 320,
+                                                colorDark : "#000000",
+                                                colorLight : "#ffffff",
+                                                correctLevel : QRCode.CorrectLevel.H
+                                            });
+                                        }
+                                    </script>
+                                    <div class="flex justify-center gap-3 mt-5">
+                                        <x-secondary-button onclick="showQrFn{{ $user->id }}(false, '{{ $user->id }}')">
+                                            {{ __('Tutup') }}
+                                        </x-secondary-button>
+                                        <x-button href="{{ route('admin.barcodes.download', $user->barcode->id) }}">
+                                            Download
+                                        </x-button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 @endforeach
             </tbody>
         </table>
@@ -226,14 +245,6 @@
                             <x-input-error for="form.email" class="mt-2" message="{{ $message }}" />
                         @enderror
                     </div>
-                    {{-- <div class="w-full">
-                        <x-label for="nip">NIP</x-label>
-                        <x-input id="nip" class="block w-full mt-1" type="text" wire:model="form.nip"
-                            placeholder="12345678" required />
-                        @error('form.nip')
-                            <x-input-error for="form.nip" class="mt-2" message="{{ $message }}" />
-                        @enderror
-                    </div> --}}
                 </div>
                 <div class="flex flex-col gap-4 mt-4 sm:flex-row sm:gap-3">
                     <div class="w-full">
@@ -323,36 +334,6 @@
                         <x-input-error for="form.division_id" class="mt-2" message="{{ $message }}" />
                     @enderror
                 </div>
-                {{-- <div class="mt-4">
-                    <x-label for="form.job_title_id" value="{{ __('Job Title') }}" />
-                    <x-select id="form.job_title_id" class="block w-full mt-1" wire:model="form.job_title_id">
-                        <option value="">{{ __('Select Job Title') }}</option>
-                        @foreach (App\Models\JobTitle::all() as $jobTitle)
-                            <option value="{{ $jobTitle->id }}"
-                                {{ $jobTitle->id == $form->job_title_id ? 'selected' : '' }}>
-                                {{ $jobTitle->name }}
-                            </option>
-                        @endforeach
-                    </x-select>
-                    @error('form.job_title_id')
-                        <x-input-error for="form.job_title_id" class="mt-2" message="{{ $message }}" />
-                    @enderror
-                </div>
-                <div class="mt-4">
-                    <x-label for="form.education_id" value="{{ __('Last Education') }}" />
-                    <x-select id="form.education_id" class="block w-full mt-1" wire:model="form.education_id">
-                        <option value="">{{ __('Select Education') }}</option>
-                        @foreach (App\Models\Education::all() as $education)
-                            <option value="{{ $education->id }}"
-                                {{ $education->id == $form->education_id ? 'selected' : '' }}>
-                                {{ $education->name }}
-                            </option>
-                        @endforeach
-                    </x-select>
-                    @error('form.education_id')
-                        <x-input-error for="form.education_id" class="mt-2" message="{{ $message }}" />
-                    @enderror
-                </div> --}}
             </x-slot>
 
             <x-slot name="footer">
@@ -435,14 +416,6 @@
                             <x-input-error for="form.email" class="mt-2" message="{{ $message }}" />
                         @enderror
                     </div>
-                    {{-- <div class="w-full">
-                        <x-label for="nip">NIP</x-label>
-                        <x-input id="nip" class="block w-full mt-1" type="text" wire:model="form.nip"
-                            placeholder="12345678" required />
-                        @error('form.nip')
-                            <x-input-error for="form.nip" class="mt-2" message="{{ $message }}" />
-                        @enderror
-                    </div> --}}
                 </div>
                 <div class="flex flex-col gap-4 mt-4 sm:flex-row sm:gap-3">
                     <div class="w-full">
@@ -531,36 +504,6 @@
                         <x-input-error for="form.division_id" class="mt-2" message="{{ $message }}" />
                     @enderror
                 </div>
-                {{-- <div class="mt-4">
-                    <x-label for="form.job_title_id" value="{{ __('Job Title') }}" />
-                    <x-select id="form.job_title_id" class="block w-full mt-1" wire:model="form.job_title_id">
-                        <option value="">{{ __('Select Job Title') }}</option>
-                        @foreach (App\Models\JobTitle::all() as $jobTitle)
-                            <option value="{{ $jobTitle->id }}"
-                                {{ $jobTitle->id == $form->job_title_id ? 'selected' : '' }}>
-                                {{ $jobTitle->name }}
-                            </option>
-                        @endforeach
-                    </x-select>
-                    @error('form.job_title_id')
-                        <x-input-error for="form.job_title_id" class="mt-2" message="{{ $message }}" />
-                    @enderror
-                </div>
-                <div class="mt-4">
-                    <x-label for="form.education_id" value="{{ __('Last Education') }}" />
-                    <x-select id="form.education_id" class="block w-full mt-1" wire:model="form.education_id">
-                        <option value="">{{ __('Select Education') }}</option>
-                        @foreach (App\Models\Education::all() as $education)
-                            <option value="{{ $education->id }}"
-                                {{ $education->id == $form->education_id ? 'selected' : '' }}>
-                                {{ $education->name }}
-                            </option>
-                        @endforeach
-                    </x-select>
-                    @error('form.education_id')
-                        <x-input-error for="form.education_id" class="mt-2" message="{{ $message }}" />
-                    @enderror
-                </div> --}}
             </x-slot>
 
             <x-slot name="footer">
@@ -637,20 +580,20 @@
                             <p>{{ $form->user->city }}</p>
                         @endif
                     </div>
-                    {{-- <div class="mt-4">
-                        <x-label for="job_title_id" value="{{ __('Job Title') }}" />
-                        <p>{{ $jobTitle }}</p>
-                    </div> --}}
                     <div class="mt-4">
                         <x-label for="division_id" value="{{ __('Kelompok') }}" />
                         <p>{{ $division }}</p>
                     </div>
-                    {{-- <div class="mt-4">
-                        <x-label for="education_id" value="{{ __('Last Education') }}" />
-                        <p>{{ $education }}</p>
-                    </div> --}}
                 </div>
             </div>
         @endif
     </x-modal>
 </div>
+
+@push('scripts')
+    <script>
+        Livewire.on('reload-page', () => {
+            window.location.reload();
+        });
+    </script>
+@endpush

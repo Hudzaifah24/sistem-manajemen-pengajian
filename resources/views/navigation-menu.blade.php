@@ -16,18 +16,10 @@
                 <x-heroicon-o-home class="w-5 h-5 mr-2" />
                 {{ __('Dashboard') }}
             </x-responsive-nav-link>
-            {{-- <x-responsive-nav-link href="{{ route('admin.barcodes') }}" :active="request()->routeIs('admin.barcodes')" class="flex items-center">
-                <x-heroicon-o-qr-code class="w-5 h-5 mr-2" />
-                {{ __('Barcode') }}
-            </x-responsive-nav-link> --}}
             <x-responsive-nav-link href="{{ route('admin.scan') }}" :active="request()->routeIs('admin.scan')" class="flex items-center">
                 <x-heroicon-o-camera class="w-5 h-5 mr-2" /> {{-- Ikon kamera untuk pemindai --}}
                 {{ __('Scan Absensi') }} {{-- Menjelaskan bahwa ini untuk petugas --}}
             </x-responsive-nav-link>
-            {{-- <x-responsive-nav-link href="{{ route('admin.barcodes') }}" :active="request()->routeIs('admin.barcodes')" class="flex items-center">
-                <x-heroicon-o-qr-code class="w-5 h-5 mr-2" />
-                {{ __('Barcode') }}
-            </x-responsive-nav-link> --}}
 
             <x-responsive-nav-link href="{{ route('admin.attendances') }}" :active="request()->routeIs('admin.attendances')" class="flex items-center">
                 <x-heroicon-o-clipboard-document-check class="w-5 h-5 mr-2" />

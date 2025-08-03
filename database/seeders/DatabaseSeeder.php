@@ -27,19 +27,5 @@ class DatabaseSeeder extends Seeder
             }
             Division::create(['name' => $value]);
         }
-        foreach (EducationFactory::$educations as $value) {
-            if (Education::where('name', $value)->exists()) {
-                continue;
-            }
-            Education::create(['name' => $value]);
-        }
-        foreach (JobTitleFactory::$jobTitles as $value) {
-            if (JobTitle::where('name', $value)->exists()) {
-                continue;
-            }
-            JobTitle::create(['name' => $value]);
-        }
-        Barcode::factory(1)->create(['name' => 'Barcode 1']);
-        Shift::factory(2)->create();
     }
 }
