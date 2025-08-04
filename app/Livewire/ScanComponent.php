@@ -19,14 +19,13 @@ class ScanComponent extends Component
     public $shifts = null;
     public ?array $currentLiveCoords = null;
     public string $successMsg = '';
+    public string $failMsg = '';
     public bool $isAbsence = false;
 
     public function scan(string $barcode)
     {
-        if (is_null($this->currentLiveCoords)) {
-            return __('Invalid location');
-        } else if (is_null($this->shift_id)) {
-            return __('Invalid shift');
+        if (is_null($this->shift_id)) {
+            return __('Pilih acara terlebih dahulu');
         }
 
         /** @var Barcode */
@@ -35,33 +34,52 @@ class ScanComponent extends Component
             return 'Invalid barcode';
         }
 
-        $barcodeLocation = new LatLong($barcode->latLng['lat'], $barcode->latLng['lng']);
-        $userLocation = new LatLong($this->currentLiveCoords[0], $this->currentLiveCoords[1]);
+        // $barcodeLocation = new LatLong($barcode->latLng['lat'], $barcode->latLng['lng']);
+        // $userLocation = new LatLong($this->currentLiveCoords[0], $this->currentLiveCoords[1]);
 
-        if (($distance = $this->calculateDistance($userLocation, $barcodeLocation)) > $barcode->radius) {
-            return __('Location out of range') . ": $distance" . "m. Max: $barcode->radius" . "m";
-        }
+        // if (($distance = $this->calculateDistance($userLocation, $barcodeLocation)) > $barcode->radius) {
+        //     return __('Location out of range') . ": $distance" . "m. Max: $barcode->radius" . "m";
+        // }
+
+        $now = Carbon::now();
 
         /** @var Attendance */
         $existingAttendance = Attendance::where('user_id', Auth::user()->id)
-            ->where('date', date('Y-m-d'))
-            ->where('barcode_id', $barcode->id)
-            ->first();
+            ->where('shift_id', $this->shift_id)
+            ->where('barcode_id', $barcode->id);
 
-        if (!$existingAttendance) {
-            $attendance = $this->createAttendance($barcode);
-            $this->successMsg = __('Attendance In Successful');
+
+        if ($barcode->shift->id == $this->shift_id) {
+            if (!$existingAttendance->where('date', date('Y-m-d'))->first()) {
+                $shift = Shift::where('id', $this->shift_id)->whereDate('date', $now->toDateString())->first();
+
+                $endTime = Carbon::now()->setTimeFromTimeString($shift->end_time);
+
+                if ($now > $endTime) {
+                    if ($existingAttendance->first()) {
+                        $this->failMsg = __('Acara sudah lewat, Anda sudah absen diacara ini.');
+                        return true;
+                    } else {
+                        $this->failMsg = __('Acara sudah selesai, anda dianggap alpa.');
+                        return true;
+                    }
+                } else {
+                    $attendance = $this->createAttendance($barcode);
+                    $this->successMsg = __('Attendance In Successful');
+                    $this->setAttendance($attendance->fresh());
+                    Attendance::clearUserAttendanceCache(Auth::user(), Carbon::parse($attendance->date));
+                    return true;
+                }
+            } else {
+                $attendance = $existingAttendance;
+                // $attendance->update([
+                //     'time_out' => date('H:i:s'),
+                // ]);
+                $this->failMsg = __('Anda sudah absen diacara ini');
+                return true;
+            }
         } else {
-            $attendance = $existingAttendance;
-            $attendance->update([
-                'time_out' => date('H:i:s'),
-            ]);
-            $this->successMsg = __('Attendance Out Successful');
-        }
-
-        if ($attendance) {
-            $this->setAttendance($attendance->fresh());
-            Attendance::clearUserAttendanceCache(Auth::user(), Carbon::parse($attendance->date));
+            $this->failMsg = __('Acara tidak cocok, pilih acara dengan benar.');
             return true;
         }
     }
@@ -87,10 +105,10 @@ class ScanComponent extends Component
             'barcode_id' => $barcode->id,
             'date' => $date,
             'time_in' => $timeIn,
-            'time_out' => null,
+            'time_out' => $shift->end_time,
             'shift_id' => $shift->id,
-            'latitude' => doubleval($this->currentLiveCoords[0]),
-            'longitude' => doubleval($this->currentLiveCoords[1]),
+            'latitude' => $this->currentLiveCoords[0] ? doubleval($this->currentLiveCoords[0]) : null,
+            'longitude' => $this->currentLiveCoords[0] ? doubleval($this->currentLiveCoords[1]) : null,
             'status' => $status,
             'note' => null,
             'attachment' => null,
@@ -117,11 +135,13 @@ class ScanComponent extends Component
 
     public function mount()
     {
-        $this->shifts = Shift::all();
+        $now = Carbon::now();
+
+        $this->shifts = Shift::whereDate('date', $now->toDateString())->get();
 
         /** @var Attendance */
         $attendance = Attendance::where('user_id', Auth::user()->id)
-            ->where('date', date('Y-m-d'))->first();
+            ->where('date', date('Y-m-d'))->where('shift_id', $this->shift_id)->first();
         if ($attendance) {
             $this->setAttendance($attendance);
         } else {

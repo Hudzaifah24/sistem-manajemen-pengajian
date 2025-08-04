@@ -91,14 +91,6 @@ class Attendance extends Model
             $query->whereYear('date', $date->year);
         })->when($userId, function (Builder $query) use ($userId) {
             $query->where('user_id', $userId);
-        })->when($division && !$userId, function (Builder $query) use ($division) {
-            $query->whereHas('user', function (Builder $query) use ($division) {
-                $query->where('division_id', $division);
-            });
-        })->when($jobTitle && !$userId, function (Builder $query) use ($jobTitle) {
-            $query->whereHas('user', function (Builder $query) use ($jobTitle) {
-                $query->where('job_title_id', $jobTitle);
-            });
         })->when($education && !$userId, function (Builder $query) use ($education) {
             $query->whereHas('user', function (Builder $query) use ($education) {
                 $query->where('education_id', $education);

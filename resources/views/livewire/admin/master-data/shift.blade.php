@@ -19,6 +19,9 @@
                 <th scope="col" class="px-6 py-3 text-xs font-medium text-left text-gray-500 dark:text-gray-300">
                     {{ __('Time End') }}
                 </th>
+                <th scope="col" class="px-6 py-3 text-xs font-medium text-left text-gray-500 dark:text-gray-300">
+                    Tanggal
+                </th>
                 <th scope="col" class="relative px-6 py-3">
                     <span class="sr-only">Actions</span>
                 </th>
@@ -35,6 +38,9 @@
                     </td>
                     <td class="px-6 py-4 text-sm font-medium text-gray-900 dark:text-white">
                         {{ $shift->end_time ?? '-' }}
+                    </td>
+                    <td class="px-6 py-4 text-sm font-medium text-gray-900 dark:text-white">
+                        {{ $shift->date }}
                     </td>
                     <td class="relative flex justify-end gap-2 px-6 py-4">
                         <x-button type="button" onclick="showQrShiftFn{{ $shift->id }}(true, '{{ $shift->id }}')">
@@ -185,12 +191,22 @@
 
         <form wire:submit.prevent="update" id="shift-edit">
             <x-slot name="content">
-                <div>
-                    <x-label for="name">Nama Acara</x-label>
-                    <x-input id="name" class="block w-full mt-1" type="text" wire:model="form.name" />
-                    @error('form.name')
-                        <x-input-error for="form.name" class="mt-2" message="{{ $message }}" />
-                    @enderror
+                <div class="flex flex-col gap-4 mt-4 sm:flex-row sm:gap-3">
+                    <div class="w-full">
+                        <x-label for="name">Nama Acara</x-label>
+                        <x-input id="name" class="block w-full mt-1" type="text" wire:model="form.name" />
+                        @error('form.name')
+                            <x-input-error for="form.name" class="mt-2" message="{{ $message }}" />
+                        @enderror
+                    </div>
+                    <div class="w-full">
+                        <x-label for="date">{{ __('Date') }}</x-label>
+                        <x-input id="date" class="block w-full mt-1" type="date" wire:model="form.date"
+                            required />
+                        @error('form.date')
+                            <x-input-error for="form.date" class="mt-2" message="{{ $message }}" />
+                        @enderror
+                    </div>
                 </div>
                 <div class="flex flex-col gap-4 mt-4 sm:flex-row sm:gap-3">
                     <div class="w-full">

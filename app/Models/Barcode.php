@@ -33,7 +33,7 @@ class Barcode extends Model
     }
 
     public function shift() {
-        return $this->hasOne(Shift::class);
+        return $this->belongsTo(Shift::class);
     }
 
     public function user() {

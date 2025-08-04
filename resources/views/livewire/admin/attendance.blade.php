@@ -31,10 +31,11 @@
             @endforeach
         </x-select>
         <x-select id="shift" name="shift" class="mb-4" wire:model.live="shift">
-            <option value="">{{ __('Filter Acara') }}</option>
+            <option value="">{{ __('Pilih Acara') }}</option>
             @foreach (App\Models\Shift::all() as $shiftOption)
                 <option value="{{ $shiftOption->id }}">
-                    {{ $shiftOption->name }}
+                    {{ $shiftOption->name }} ({{ Carbon\Carbon::parse($shiftOption->start_time)->format('H:i') }} -
+                        {{ Carbon\Carbon::parse($shiftOption->end_time)->format('H:i') }})
                 </option>
             @endforeach
         </x-select>
@@ -45,7 +46,7 @@
         </div>
         <div class="lg:hidden"></div>
         <x-secondary-button
-            href="{{ route('admin.attendances.report', ['month' => $month, 'week' => $week, 'date' => $date, 'shift' => $shift]) }}"
+            href="{{ route('admin.attendances.report', ['month' => $month, 'week' => $week, 'date' => $date]) }}"
             class="flex justify-center gap-2">
             Cetak Laporan
             <x-heroicon-o-printer class="w-5 h-5" />
@@ -220,7 +221,7 @@
                             <td class="{{ $class }} group-hover:bg-gray-100 dark:group-hover:bg-gray-700">
                                 <select
                                     class="w-full border-gray-300 rounded-md shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 dark:border-gray-700 dark:bg-gray-900 dark:text-white dark:focus:ring-indigo-800"
-                                    wire:change="updateAttendanceStatus('{{ $employee->id }}', $event.target.value, '{{ $date }}')">
+                                    wire:change="updateAttendanceStatus('{{ $employee->id }}', $event.target.value, '{{ $date }}', '{{ $currentShiftForSelect }}')">
                                     <option value="" disabled @if ($currentStatusForSelect === '-') selected @endif>
                                         Pilih Status</option>
                                     <option value="present" @selected($currentStatusForSelect === 'present')>Hadir</option>

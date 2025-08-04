@@ -65,6 +65,9 @@
       <h4 id="scanner-result" class="hidden mb-3 text-lg font-semibold text-green-500 dark:text-green-400 sm:text-xl">
         {{ $successMsg }}
       </h4>
+      <h4 id="scanner-result-fail" class="hidden mb-3 text-lg font-semibold text-red-500 dark:text-red-400 sm:text-xl">
+        {{ $failMsg }}
+      </h4>
       <h4 id="latlng" class="mb-3 text-lg font-semibold text-gray-600 dark:text-gray-100 sm:text-xl">
         {{ __('Date') . ': ' . now()->format('d/m/Y') }}<br>
 
@@ -219,10 +222,10 @@
           scanner.pause(true);
         }
 
-        if (!(await checkTime())) {
-          await startScanning();
-          return;
-        }
+        // if (!(await checkTime())) {
+        //   await startScanning();
+        //   return;
+        // }
 
         const result = await $wire.scan(decodedText);
 
@@ -252,8 +255,8 @@
               second: 'numeric',
               hour12: false,
             });
-            const confirmation = confirm(
-              `Anda baru saja absen pada ${timeIn}, apakah ingin melanjutkan untuk absen keluar?`
+            const confirmation = console.log(
+              `Anda sudah absen pada ${timeIn}.`
             );
             return confirmation;
           }
@@ -262,9 +265,12 @@
       }
 
       function onAttendanceSuccess() {
-        scanner.stop();
+        if (scanner.getState() === Html5QrcodeScannerState.PAUSED) {
+          scanner.resume();
+        }
         errorMsg.innerHTML = '';
         document.querySelector('#scanner-result').classList.remove('hidden');
+        document.querySelector('#scanner-result-fail').classList.remove('hidden');
       }
 
       const observer = new MutationObserver((mutationList, observer) => {

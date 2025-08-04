@@ -131,7 +131,7 @@
                 return;
             }
 
-            document.getElementById("result").innerText = "Hasil: " + barcodeValue;
+            // document.getElementById("result").innerText = "Hasil: " + barcodeValue;
 
             // Logic DB Tambah Attendance
             const BarcodeMatch = barcodes.find(b => b.value == barcodeValue);
