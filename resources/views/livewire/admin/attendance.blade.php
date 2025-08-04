@@ -45,7 +45,7 @@
         </div>
         <div class="lg:hidden"></div>
         <x-secondary-button
-            href="{{ route('admin.attendances.report', ['month' => $month, 'week' => $week, 'date' => $date, 'division' => $division, 'jobTitle' => $jobTitle, 'shift' => $shift]) }}"
+            href="{{ route('admin.attendances.report', ['month' => $month, 'week' => $week, 'date' => $date, 'shift' => $shift]) }}"
             class="flex justify-center gap-2">
             Cetak Laporan
             <x-heroicon-o-printer class="w-5 h-5" />
